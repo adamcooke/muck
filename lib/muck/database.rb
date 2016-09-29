@@ -58,7 +58,7 @@ module Muck
 
     def dump_command
       password_opt = password ? "-p#{password}" : ""
-      "mysqldump --flush-logs -q --single-transaction -h #{hostname} -u #{username} #{password_opt} #{name}"
+      "mysqldump -q --single-transaction -h #{hostname} -u #{username} #{password_opt} #{name}"
     end
 
     def last_backup_at
