@@ -25,7 +25,7 @@ module Muck
       if path = (@server_hash.dig(:storage, :path) || @config.defaults.dig(:storage, :path))
         path.gsub(":hostname", self.hostname)
       else
-        "/opt/muck/data/#{self.hostname}"
+        "/opt/muck/data/#{self.hostname}/:database"
       end
     end
 

@@ -62,8 +62,9 @@ server do
 
   storage do
     # Specifies the directory that backups will be stored for this server. You
-    # can use :hostname to insert the name of the hostname automatically.
-    path "/opt/muck/data/:hostname"
+    # can use :hostname to insert the name of the hostname automatically and
+    # :database to insert the database name.
+    path "/opt/muck/data/:hostname/:database"
     # The number of "master" bacups which should be kept before being archived.
     keep 50
   end
