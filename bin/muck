@@ -13,6 +13,19 @@ begin
   case ARGV[0]
   when 'run'
     config.run(:force => true)
+  when 'single'
+    if server = config.servers.find { |s| s.hostname.downcase == ARGV[1].to_s.downcase }
+      if database = server.databases.find { |d| d.name.downcase == ARGV[2].to_s.downcase }
+        database.backup
+        database.archive_all
+      else
+        puts "No database found matching name '#{ARGV[2]}' on #{server.hostname}"
+        exit 1
+      end
+    else
+      puts "No server found matching hostname '#{ARGV[1]}'"
+      exit 1
+    end
   when 'start'
     $running = false
     Signal.trap("INT")  { $exit = true; $running ? nil : exit(0) }

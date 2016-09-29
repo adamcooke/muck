@@ -103,8 +103,7 @@ The `muck` command line tool can be used in two ways.
 
 * `muck start` - this will run constantly (and can be backgrounded to turned into a service as appropriate). It will respect the `frequency` option specified for a server and back all servers up whenever they are due for a backup.
 * `muck run` - this will take a backup from all servers & database and exit when complete.
-
-Both ways will send all log output to STDOUT.
+* `muck single [server] [database]` - this will run a backup for a given database (name) on a given server (hostname)
 
 ## Data
 
