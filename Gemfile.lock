@@ -1,0 +1,19 @@
+PATH
+  remote: .
+  specs:
+    muck (1.0.0)
+      net-ssh (>= 3.2, < 4.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    net-ssh (3.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  muck!
+
+BUNDLED WITH
+   1.13.0

@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+$:.push File.expand_path("../../lib", __FILE__)
+
+config_file_path = ENV['MUCK_CONFIG_PATH'] || File.expand_path('/opt/muck/config')
+
+require 'muck/config'
+require 'muck/logging'
+
+config = Muck::Config.new(config_file_path)
+
+begin
+  case ARGV[0]
+  when 'run'
+    config.run(:force => true)
+  when 'start'
+    $running = false
+    Signal.trap("INT")  { $exit = true; $running ? nil : exit(0) }
+    Signal.trap("TERM") { $exit = true; $running ? nil : exit(0) }
+    Muck.logger.info "\e[32mStarted Muck\e[0m"
+    loop do
+      $running = true
+      config.run
+      $running = false
+      $exit ? exit(0) : sleep(30)
+    end
+  else
+    puts "usage: #{$0} [command]"
+  end
+rescue Muck::Error => e
+  puts "\e[31mError: #{e.message}\e[0m"
+end
