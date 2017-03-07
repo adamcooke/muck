@@ -4,6 +4,9 @@ $:.push File.expand_path("../../lib", __FILE__)
 
 config_file_path = ENV['MUCK_CONFIG_PATH'] || File.expand_path('/opt/muck/config')
 
+$stdout.sync = true
+$stderr.sync = true
+
 require 'muck/config'
 require 'muck/logging'
 
