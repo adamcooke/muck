@@ -29,32 +29,37 @@ module Muck
       logger.info "Connecting to #{blue @database.server.ssh_username}@#{blue @database.server.hostname}:#{blue @database.server.ssh_port}"
       FileUtils.mkdir_p(File.dirname(self.export_path))
       file = File.open(export_path, 'w')
-      ssh_session = @database.server.create_ssh_session
-      channel = ssh_session.open_channel do |channel|
-        logger.debug "Running: #{@database.dump_command}"
-        channel.exec(@database.dump_command) do |channel, success|
-          raise Error, "Could not execute dump command" unless success
-          channel.on_data do |c, data|
-            file.write(data)
-          end
 
-          channel.on_extended_data do |c, _, data|
-            logger.debug red(data.gsub(/[\r\n]/, ''))
-          end
+      begin
+        ssh_session = @database.server.create_ssh_session
+        channel = ssh_session.open_channel do |channel|
+          logger.debug "Running: #{@database.dump_command}"
+          channel.exec(@database.dump_command) do |channel, success|
+            raise Error, "Could not execute dump command" unless success
+            channel.on_data do |c, data|
+              file.write(data)
+            end
 
-          channel.on_request("exit-status") do |_, data|
-            exit_code = data.read_long
-            if exit_code != 0
-              logger.debug "Exit status was #{exit_code}"
-              raise Error, "mysqldump returned an error when executing."
+            channel.on_extended_data do |c, _, data|
+              logger.debug red(data.gsub(/[\r\n]/, ''))
+            end
+
+            channel.on_request("exit-status") do |_, data|
+              exit_code = data.read_long
+              if exit_code != 0
+                logger.debug "Exit status was #{exit_code}"
+                raise Error, "mysqldump returned an error when executing."
+              end
             end
           end
         end
+        channel.wait
+        ssh_session.close
+        file.close
+        logger.info "Successfully backed up to #{green export_path}"
+      rescue Net::SSH::ConnectionTimeout
+        raise Error, "Timeout while trying to connect to SSH server"
       end
-      channel.wait
-      ssh_session.close
-      file.close
-      logger.info "Successfully backed up to #{green export_path}"
     end
 
     def store_in_manifest
