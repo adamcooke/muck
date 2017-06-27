@@ -61,7 +61,7 @@ module Muck
     end
 
     def create_ssh_session
-      Net::SSH.start(self.hostname, self.ssh_username, :port => self.ssh_port, :keys => ssh_properties[:key] ? [ssh_properties[:key]] : nil)
+      Net::SSH.start(self.hostname, self.ssh_username, :port => self.ssh_port, :timeout => 60, :keys => ssh_properties[:key] ? [ssh_properties[:key]] : nil)
     end
 
   end
